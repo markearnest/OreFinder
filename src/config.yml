@@ -1,0 +1,26 @@
+# Messages to players
+text:
+    very_hot: Very hot!
+    hot: Hot!
+    warm: Warm!
+    lukewarm: Lukewarm.
+    cold: Cold.
+    very_cold: Ice cold!
+    ender_steal: An enderman stole your block!
+    
+# Adjust prevalence for
+# - steal_block > Enderman "comes", hit the player and steal a block from the player
+# 32 means 1/32 chance to happen 
+chance:
+    steal_block: 48
+# Turn on/off optional functions
+functions:
+    block_stealing: false
+# Item/Block id
+indicate:
+  inhand:
+  - diamond
+  - emerald
+  lookfor:
+  - diamond_ore
+  - emerald_ore

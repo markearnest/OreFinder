@@ -1,0 +1,11 @@
+name: OreFinder
+main: org.mystikos.minecraft.orefinder.Orefinder
+version: 1.0
+permissions:
+    orefinder.*:
+        description: Gives access to all OreFinder feature
+        children:
+            orefinder.use: true
+    orefinder.use:
+        default: true
+        description: Allows you to use OreFinder

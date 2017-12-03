@@ -14,11 +14,11 @@
  */
 package org.mystikos.minecraft.orefinder;
 
-public class itemConf {
+class itemConf {
 
+    private final Orefinder plugin;
     private String[] inhand;
     private String[] lookfor;
-    private final Orefinder plugin;
     private int size;
 
     itemConf(Orefinder _plugin) {

@@ -14,12 +14,7 @@
  */
 package org.mystikos.minecraft.orefinder;
 
-import java.util.Random;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,90 +24,18 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import java.util.Random;
 
-public class RCHPlayerInteract
+class RCHPlayerInteract
         implements Listener {
 
     private final Orefinder plugin;
     private final itemConf ic;
     private PlayerCD pcdm;
 
-    class PCDR {
-
-        private int time;
-        private final int pid;
-
-        PCDR(int _pid) {
-            this.time = 0;
-            this.pid = _pid;
-        }
-
-        int getPid() {
-            return this.pid;
-        }
-
-        int getTime() {
-            return this.time;
-        }
-
-        void setTime(int _time) {
-            this.time = _time;
-        }
-    }
-
-    class PlayerCD {
-
-        private final RCHPlayerInteract.PCDR[] pcdrs;
-        private int cnt;
-        private final int cap;
-
-        PlayerCD(int slots) {
-            this.cnt = 0;
-            this.cap = slots;
-            this.pcdrs = new RCHPlayerInteract.PCDR[slots];
-        }
-
-        private int getRid(int _pid) {
-            for (int idxA = 0; idxA < this.cnt; idxA++) {
-                if (this.pcdrs[idxA].getPid() == _pid) {
-                    return idxA;
-                }
-            }
-            return -1;
-        }
-
-        private boolean delRecord(int _pid) {
-            int rid = getRid(_pid);
-            if (rid != -1) {
-                for (int idxA = rid + 1; idxA < this.cap; idxA++) {
-                    this.pcdrs[(idxA - 1)] = this.pcdrs[idxA];
-                }
-                this.cnt -= 1;
-                return true;
-            }
-            return false;
-        }
-
-        public int getSize() {
-            return this.cap;
-        }
-
-        public boolean getUseRight(int _pid) {
-            int rid = getRid(_pid);
-            if ((rid == -1) && (this.cnt < this.cap)) {
-                rid = this.cnt;
-                this.pcdrs[rid] = new RCHPlayerInteract.PCDR(_pid);
-                this.cnt += 1;
-            }
-            if (rid != -1) {
-                int ctime = (int) (System.currentTimeMillis() / 1000L);
-                if (ctime > this.pcdrs[rid].getTime()) {
-                    this.pcdrs[rid].setTime(ctime);
-                    return true;
-                }
-            }
-            return false;
-        }
+    public RCHPlayerInteract(Orefinder _of) {
+        this.plugin = _of;
+        this.ic = new itemConf(this.plugin);
     }
 
     private int getBlockTypeDistance(Location loc, String stid) {
@@ -168,6 +91,8 @@ public class RCHPlayerInteract
                 int R = getBlockTypeDistance(event.getClickedBlock().getLocation(), stid);
                 if (R == -1) {
                     player.sendMessage(ChatColor.BLUE + this.plugin.getConfig().getString("text.very_cold"));
+                } else if (R < 2) {
+                    player.sendMessage(ChatColor.DARK_RED + this.plugin.getConfig().getString("text.oneblock_hot"));
                 } else if (R < 4) {
                     player.sendMessage(ChatColor.RED + this.plugin.getConfig().getString("text.very_hot"));
                 } else if (R < 6) {
@@ -190,7 +115,7 @@ public class RCHPlayerInteract
                                 holding.setAmount(--amt);
                             } else {
                                 PlayerInventory inventory = player.getInventory();
-                                inventory.setItemInHand(null);
+                                inventory.setItemInMainHand(null);
                             }
                         }
                         player.sendMessage(this.plugin.getConfig().getString("text.ender_steal"));
@@ -200,13 +125,82 @@ public class RCHPlayerInteract
         }
     }
 
-    public RCHPlayerInteract(Orefinder _of) {
-        this.plugin = _of;
-        this.ic = new itemConf(this.plugin);
-    }
-
     public void init() {
         this.pcdm = new PlayerCD(Bukkit.getMaxPlayers());
         this.ic.Init();
+    }
+
+    class PCDR {
+
+        private final int pid;
+        private int time;
+
+        PCDR(int _pid) {
+            this.time = 0;
+            this.pid = _pid;
+        }
+
+        int getPid() {
+            return this.pid;
+        }
+
+        int getTime() {
+            return this.time;
+        }
+
+        void setTime(int _time) {
+            this.time = _time;
+        }
+    }
+
+    class PlayerCD {
+
+        private final RCHPlayerInteract.PCDR[] pcdrs;
+        private final int cap;
+        private int cnt;
+
+        PlayerCD(int slots) {
+            this.cnt = 0;
+            this.cap = slots;
+            this.pcdrs = new RCHPlayerInteract.PCDR[slots];
+        }
+
+        private int getRid(int _pid) {
+            for (int idxA = 0; idxA < this.cnt; idxA++) {
+                if (this.pcdrs[idxA].getPid() == _pid) {
+                    return idxA;
+                }
+            }
+            return -1;
+        }
+
+        private void delRecord(int _pid) {
+            int rid = getRid(_pid);
+            if (rid != -1) {
+                System.arraycopy(this.pcdrs, rid + 1, this.pcdrs, rid + 1 - 1, this.cap - (rid + 1));
+                this.cnt -= 1;
+            }
+        }
+
+        public int getSize() {
+            return this.cap;
+        }
+
+        boolean getUseRight(int _pid) {
+            int rid = getRid(_pid);
+            if ((rid == -1) && (this.cnt < this.cap)) {
+                rid = this.cnt;
+                this.pcdrs[rid] = new RCHPlayerInteract.PCDR(_pid);
+                this.cnt += 1;
+            }
+            if (rid != -1) {
+                int ctime = (int) (System.currentTimeMillis() / 1000L);
+                if (ctime > this.pcdrs[rid].getTime()) {
+                    this.pcdrs[rid].setTime(ctime);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

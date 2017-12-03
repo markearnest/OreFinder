@@ -1,5 +1,6 @@
 # Messages to players
 text:
+    oneblock_hot: One block away!
     very_hot: Very hot!
     hot: Hot!
     warm: Warm!

@@ -14,39 +14,37 @@
  */
 package org.mystikos.minecraft.orefinder;
 
-import java.util.logging.Logger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Logger;
+
 public class Orefinder
-  extends JavaPlugin
-{
-  static final Logger LOG = Logger.getLogger("Minecraft");
-  private final RCHPlayerInteract pInteract = new RCHPlayerInteract(this);
-  
+        extends JavaPlugin {
+    static final Logger LOG = Logger.getLogger("Minecraft");
+    private final RCHPlayerInteract pInteract = new RCHPlayerInteract(this);
+
     /**
-     * On enable 
+     * On enable
      */
     @Override
-  public void onEnable()
-  {
-    getConfig().options().copyDefaults(true);
-    saveConfig();
-    
-    PluginManager pm = getServer().getPluginManager();
-    pm.registerEvents(this.pInteract, this);
-    
-    this.pInteract.init();
-    
-    getLogger().info("OreFinder enabled.");
-  }
-  
+    public void onEnable() {
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(this.pInteract, this);
+
+        this.pInteract.init();
+
+        getLogger().info("OreFinder enabled.");
+    }
+
     /**
      * On Disable
      */
     @Override
-  public void onDisable()
-  {
-    getLogger().info("OreFinder disabled.");
-  }
+    public void onDisable() {
+        getLogger().info("OreFinder disabled.");
+    }
 }

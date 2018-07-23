@@ -1,6 +1,7 @@
 name: OreFinder
 main: org.mystikos.minecraft.orefinder.Orefinder
 version: 1.0
+api-version: 1.13
 permissions:
     orefinder.*:
         description: Gives access to all OreFinder feature

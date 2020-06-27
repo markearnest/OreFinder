@@ -22,6 +22,8 @@ indicate:
   inhand:
   - diamond
   - emerald
+  - ancient_debris
   lookfor:
   - diamond_ore
   - emerald_ore
+  - ancient_debris
